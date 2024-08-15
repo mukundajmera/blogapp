@@ -11,9 +11,9 @@ import org.springframework.lang.Nullable;
 @Setter
 @ToString
 @RequiredArgsConstructor
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Builder
 public class UserEntitiy {
 
     @Id
