@@ -1,8 +1,10 @@
 package com.example.blogapp.users;
 
+import com.example.blogapp.security.JWTService;
 import com.example.blogapp.users.dtos.CreateUserRequest;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.Banner;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -10,20 +12,23 @@ public class UsersService {
 
     private final UsersRepository usersRepository;
     private final ModelMapper modelMapper;
+    private final PasswordEncoder passwordEncoder;
 
-    public UsersService(UsersRepository usersRepository, ModelMapper modelMapper){
+    public UsersService(UsersRepository usersRepository, ModelMapper modelMapper, PasswordEncoder passwordEncoder) {
         this.usersRepository = usersRepository;
         this.modelMapper = modelMapper;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public UserEntitiy createUser(CreateUserRequest request){
         UserEntitiy newUser = modelMapper.map(request, UserEntitiy.class);
-        //TODO encrypt and add password
-//        var newUser = UserEntitiy.builder()
-//                .username(request.getUsername())
-//                .email(request.getEmail())
-//                .build();
-//
+        newUser.setPassword(passwordEncoder.encode(request.getPassword()));
+        /* another way
+        var newUser = UserEntitiy.builder()
+                .username(request.getUsername())
+                .email(request.getEmail())
+                .build();
+         */
         return usersRepository.save(newUser);
     }
 
@@ -37,7 +42,10 @@ public class UsersService {
 
     public UserEntitiy loginUser(String username, String password){
         var user = usersRepository.findByUsername(username).orElseThrow(() -> new UserNotFoundException(username));
-        //TODO: check password
+        var passMatch = passwordEncoder.matches(password, user.getPassword());
+        if(!passMatch){
+            throw new InvaildCredentialsException();
+        }
         return user;
     }
 
@@ -50,6 +58,11 @@ public class UsersService {
 
         public UserNotFoundException(Long authorId){
             super("User with ID : "+ authorId + " not found");
+        }
+    }
+    public static class InvaildCredentialsException extends IllegalArgumentException{
+        public InvaildCredentialsException(){
+            super("Invalid username or password combination");
         }
     }
 
