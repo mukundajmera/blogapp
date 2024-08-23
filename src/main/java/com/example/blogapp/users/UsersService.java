@@ -1,9 +1,7 @@
 package com.example.blogapp.users;
 
-import com.example.blogapp.security.JWTService;
 import com.example.blogapp.users.dtos.CreateUserRequest;
 import org.modelmapper.ModelMapper;
-import org.springframework.boot.Banner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
