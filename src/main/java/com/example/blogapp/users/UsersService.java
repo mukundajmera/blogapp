@@ -47,9 +47,7 @@ public class UsersService {
         return user;
     }
 
-    public
-
-    static class UserNotFoundException extends IllegalArgumentException{
+    public static class UserNotFoundException extends IllegalArgumentException{
         public UserNotFoundException(String username){
             super("User with username : "+ username + " not found");
         }
